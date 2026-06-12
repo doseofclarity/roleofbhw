@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Barangay Health Worker (BHW) Role – PHN Philippines</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        .transition-all { transition: all 0.3s ease; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #b45309; border-radius: 8px; }
+        .content-section { animation: fade 0.3s ease; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .locked-section { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .recall-mode .reveal-text {
+            background-color: #cbd5e1;
+            color: transparent;
+            border-radius: 0.375rem;
+            padding: 0 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            box-shadow: inset 0 0 0 1px #94a3b8;
+        }
+        .recall-mode .reveal-text:hover,
+        .recall-mode .reveal-text.revealed {
+            background-color: #fde047;
+            color: #1e293b;
+            box-shadow: none;
+        }
+        .quiz-feedback-correct { background-color: #dcfce7; border-left: 4px solid #22c55e; }
+        .quiz-feedback-wrong { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body class="bg-slate-50 h-screen flex flex-col md:flex-row font-sans text-slate-800 overflow-hidden">
+
+    <!-- Mobile header -->
+    <div class="md:hidden bg-amber-800 text-white p-4 flex justify-between items-center shadow-md z-30 shrink-0">
+        <button onclick="toggleMobileMenu()" class="text-white focus:outline-none z-40"><i class="fa-solid fa-bars text-2xl"></i></button>
+        <h1 class="font-bold text-lg absolute left-1/2 transform -translate-x-1/2 pointer-events-none">BHW Role</h1>
+        <div class="w-8"></div>
+    </div>
+
+    <!-- Sidebar navigation -->
+    <nav id="sidebar" class="hidden md:flex flex-col w-full md:w-80 bg-white shadow-2xl h-full absolute md:relative z-30 transition-transform duration-300 shrink-0 border-r border-slate-200">
+        <div class="p-6 bg-gradient-to-br from-amber-800 to-amber-700 text-white hidden md:block shrink-0">
+            <h1 class="font-black text-2xl tracking-wide"><i class="fa-solid fa-hand-holding-heart text-amber-200 mr-2"></i> BHW Module</h1>
+            <p class="text-sm text-amber-100 mt-1">Barangay Health Worker · PHC backbone</p>
+        </div>
+        <div class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 text-sm font-medium">
+                <li><button onclick="showSection('home')" id="btn-home" class="nav-btn w-full text-left px-6 py-3 bg-amber-100 text-amber-900 border-r-4 border-amber-800 transition-colors"><i class="fa-solid fa-house w-6 nav-icon"></i><i class="fa-solid fa-lock w-6 hidden text-slate-400"></i> Home / Start</button></li>
+                <li><button onclick="showSection('definition')" id="btn-definition" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-scale-balanced w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Definition & Legal Bases</button></li>
+                <li><button onclick="showSection('qualifications')" id="btn-qualifications" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-graduation-cap w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Qualifications & Training</button></li>
+                <li><button onclick="showSection('roles')" id="btn-roles" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-list-check w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Roles & Responsibilities</button></li>
+                <li><button onclick="showSection('programs')" id="btn-programs" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-tablets w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> BHW in Specific Programs</button></li>
+                <li><button onclick="showSection('team')" id="btn-team" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-people-group w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> BHW as Part of PHC Team</button></li>
+                <li><button onclick="showSection('benefits')" id="btn-benefits" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-gift w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Benefits & Incentives (RA 7883)</button></li>
+                <li><button onclick="showSection('phn_bhw')" id="btn-phn_bhw" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-user-nurse w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> PHN-BHW Collaboration</button></li>
+                <li><button onclick="showSection('mnemonics')" id="btn-mnemonics" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors border-t border-slate-200 mt-2 locked-section"><i class="fa-solid fa-brain w-6 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Mnemonic Appendix</button></li>
+                <li><button onclick="showSection('final_quiz_sec')" id="btn-final_quiz_sec" class="nav-btn w-full text-left px-6 py-3 text-slate-600 hover:bg-slate-50 transition-colors locked-section"><i class="fa-solid fa-graduation-cap w-6 text-amber-500 nav-icon hidden"></i><i class="fa-solid fa-lock w-6 text-slate-400"></i> Final 50‑Item Exam</button></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="flex-1 h-full overflow-y-auto bg-slate-100 relative w-full">
+        <div class="fixed top-16 md:top-4 right-4 md:right-8 z-40 flex items-center bg-white/90 backdrop-blur px-4 py-3 rounded-full shadow-lg border border-slate-200 cursor-pointer hover:bg-slate-50 transition-colors" onclick="toggleRecallMode()">
+            <span class="mr-3 text-sm font-bold text-slate-700 hidden md:inline"><i class="fa-solid fa-brain text-amber-600 mr-1"></i> Active Recall</span>
+            <span class="mr-3 text-sm font-bold text-slate-700 md:hidden"><i class="fa-solid fa-brain text-amber-600"></i></span>
+            <button id="recall-toggle" class="w-12 h-6 bg-slate-300 rounded-full relative transition-colors duration-300 focus:outline-none shadow-inner pointer-events-none">
+                <div id="recall-knob" class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 transition-transform duration-300 shadow"></div>
+            </button>
+        </div>
+
+        <div class="p-4 md:p-8 max-w-6xl mx-auto pb-32">
+            <!-- HOME SECTION -->
+            <section id="home" class="content-section flex flex-col items-center justify-center min-h-[80vh] text-center block">
+                <div class="bg-gradient-to-br from-amber-900 to-amber-700 text-white rounded-3xl shadow-2xl p-10 md:p-16 w-full relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-10 -mr-10 text-white opacity-5 pointer-events-none"><i class="fa-solid fa-hand-peace text-[20rem]"></i></div>
+                    <div class="relative z-10">
+                        <div class="bg-white/10 backdrop-blur-sm inline-block p-4 rounded-full text-amber-200 mb-6 shadow-sm border border-white/20"><i class="fa-solid fa-house-chimney-user text-5xl"></i></div>
+                        <h3 class="text-xl font-bold text-amber-200 mb-2 uppercase tracking-widest">Primary Health Care · DOH Framework</h3>
+                        <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight drop-shadow-md">Barangay Health Worker<br>The Backbone of Community Health</h1>
+                        <div class="bg-white/10 backdrop-blur inline-block px-6 py-3 rounded-full mb-10 border border-white/20">
+                            <p class="text-lg text-white font-medium">“Trained community health volunteers – first contact, trusted partner, health advocate.”</p>
+                        </div>
+                        <button onclick="unlockFirstSection()" class="bg-amber-600 hover:bg-amber-500 text-white font-black py-4 px-10 rounded-full shadow-xl transition-transform hover:scale-105 text-lg flex items-center mx-auto focus:outline-none">Begin Module <i class="fa-solid fa-arrow-right ml-3"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 1: Definition & Legal Bases -->
+            <section id="definition" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-scale-balanced text-amber-600 mr-4"></i> Definition & Legal Bases</h2>
+                    <p><strong>Barangay Health Workers (BHWs)</strong> are <span class="reveal-text">trained community health workers or health auxiliary volunteers</span>, including traditional birth attendants and healers. They form the <strong>village or barangay level</strong> of primary health care workers. (Source: PHN White Book, Chapter II – Primary Health Care)</p>
+                    <div class="grid md:grid-cols-2 gap-5 mt-4">
+                        <div class="bg-amber-50 p-4 rounded-xl"><i class="fa-regular fa-file-lines"></i> <strong>Key Legal Bases:</strong><br>• LOI 949 (1979) – adopted PHC in the Philippines.<br>• <span class="reveal-text">RA 7883 (Barangay Health Worker's Benefits and Incentives Act of 1995)</span> – provides benefits and incentives.<br>• RA 7305 (Magna Carta for Public Health Workers) – extends certain protections.</div>
+                        <div class="bg-amber-50 p-4 rounded-xl"><i class="fa-solid fa-people-arrows"></i> <strong>BHW as PHC worker:</strong> The PHC team consists of physician, nurse, midwife, sanitary inspector, and BHWs. BHWs are trained to assume redefined roles and functions.</div>
+                    </div>
+                    <button onclick="openQuiz('definition')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-amber-400"></i> Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- SECTION 2: Qualifications & Training -->
+            <section id="qualifications" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-graduation-cap text-amber-600 mr-4"></i> Qualifications & Training</h2>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li>Resident of the barangay, preferably chosen by the community.</li>
+                        <li>At least elementary level graduate; ability to read and write.</li>
+                        <li>Willing to render volunteer service.</li>
+                        <li>Training provided by <span class="reveal-text">DOH, LGU, or NGOs</span> – basic health care, first aid, maternal & child health, immunization support, disease surveillance, community organizing.</li>
+                        <li>After training, BHWs are accredited by the LGU and become members of the Barangay Health Committee.</li>
+                    </ul>
+                    <div class="bg-blue-50 p-3 rounded mt-3"><i class="fa-regular fa-clock"></i> <strong>Refresher courses</strong> and continuing education are provided to update skills (e.g., new vaccines, IMCI, CDD).</div>
+                    <button onclick="openQuiz('qualifications')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-amber-400"></i> Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- SECTION 3: Roles & Responsibilities -->
+            <section id="roles" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-list-check text-amber-600 mr-4"></i> Roles & Responsibilities of BHWs</h2>
+                    <p>Based on the PHN White Book (Chapter II, IV, IX) and DOH guidelines, BHWs perform:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Health promotion & education:</strong> Conduct community assemblies, mother's classes, one-on-one counseling.</li>
+                        <li><strong>First aid & emergency response:</strong> Basic first aid, referral of emergencies.</li>
+                        <li><strong>Maternal & child health:</strong> Assist in prenatal promotion, accompany pregnant women to RHU, promote breastfeeding, growth monitoring.</li>
+                        <li><strong>Immunization support:</strong> Mobilize children for EPI, assist in vaccination sessions, maintain target client lists.</li>
+                        <li><strong>Family planning:</strong> Distribute pills/condoms (after training), counsel on FP methods, refer for IUD/BTL.</li>
+                        <li><strong>Communicable disease control:</strong> Case finding, DOTS support (TB), distribute ORS for diarrhea, environmental sanitation promotion.</li>
+                        <li><strong>Nutrition:</strong> Identify malnourished children, assist in feeding programs, promote vegetable gardens.</li>
+                        <li><strong>Record keeping:</strong> Maintain family folders, report vital events (births, deaths), submit reports to RHU.</li>
+                    </ul>
+                    <button onclick="openQuiz('roles')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-amber-400"></i> Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- SECTION 4: BHW in Specific Programs -->
+            <section id="programs" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-tablets text-amber-600 mr-4"></i> BHW in Specific Public Health Programs</h2>
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-green-50 p-4 rounded-xl"><strong>Expanded Program on Immunization (EPI):</strong> BHWs help identify infants for vaccination, inform parents of schedules, and support outreach immunization days (Reaching Every Barangay strategy).</div>
+                        <div class="bg-green-50 p-4 rounded-xl"><strong>TB-DOTS:</strong> BHWs can serve as <span class="reveal-text">treatment partners (DOT providers)</span> under supervision of PHN or midwife – observe patients taking anti-TB drugs.</div>
+                        <div class="bg-green-50 p-4 rounded-xl"><strong>Family Planning:</strong> BHWs are trained to provide pills and condoms, counsel on FP, and refer for other methods.</div>
+                        <div class="bg-green-50 p-4 rounded-xl"><strong>Control of Diarrheal Diseases (CDD):</strong> BHWs teach ORS preparation, promote handwashing, and refer severe cases.</div>
+                        <div class="bg-green-50 p-4 rounded-xl"><strong>Malaria & Filariasis:</strong> BHWs assist in case finding, blood smear collection (with training), and distribution of insecticide-treated nets.</div>
+                        <div class="bg-green-50 p-4 rounded-xl"><strong>Nutrition Program:</strong> BHWs weigh children, identify underweight, refer to feeding programs, and promote micronutrient supplementation.</div>
+                    </div>
+                    <button onclick="openQuiz('programs')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-amber-400"></i> Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- SECTION 5: BHW as Part of PHC Team -->
+            <section id="team" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-people-group text-amber-600 mr-4"></i> BHW as Part of the PHC Team</h2>
+                    <p>The Primary Health Care team is interdisciplinary. BHWs are the <strong>frontline link</strong> between the formal health system and the community.</p>
+                    <ul class="list-disc pl-5 space-y-2 mt-3">
+                        <li><strong>Team composition:</strong> Physician, PHN, Midwife, Sanitary Inspector, BHW, and at times dentist, nutritionist.</li>
+                        <li><strong>BHW role in the team:</strong> Community mobilization, early detection, basic care, referral, follow-up.</li>
+                        <li>BHWs attend regular team meetings at the RHU and participate in planning health activities.</li>
+                        <li>They are supervised by the <span class="reveal-text">Public Health Nurse or Rural Health Midwife</span>.</li>
+                        <li>In the <strong>Integrated Management of Childhood Illness (IMCI)</strong> community component, BHWs are trained to assess and classify common childhood illnesses and refer appropriately.</li>
+                    </ul>
+                    <button onclick="openQuiz('team')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-amber-400"></i> Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- SECTION 6: Benefits & Incentives (RA 7883) -->
+            <section id="benefits" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-gift text-amber-600 mr-4"></i> Benefits & Incentives (RA 7883)</h2>
+                    <p><strong>Republic Act 7883 – Barangay Health Worker's Benefits and Incentives Act of 1995</strong> provides:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><span class="reveal-text">Monthly honorarium</span> (amount determined by LGU).</li>
+                        <li>Access to skills training and continuing education.</li>
+                        <li>Free medical and dental services in government facilities.</li>
+                        <li>Priority in selection for government health-related employment.</li>
+                        <li>Insurance coverage (accident/injury while on duty).</li>
+                        <li>Recognition and awards for outstanding performance.</li>
+                    </ul>
+                    <div class="bg-amber-50 p-3 rounded mt-3"><i class="fa-regular fa-building"></i> <strong>LGU responsibility:</strong> Local governments are mandated to accredit BHWs, provide supplies, and ensure their integration into the local health system.</div>
+                    <button onclick="openQuiz('benefits')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-amber-400"></i> Take Quiz → Unlock Next</button>
+                </div>
+            </section>
+
+            <!-- SECTION 7: PHN-BHW Collaboration -->
+            <section id="phn_bhw" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-user-nurse text-amber-600 mr-4"></i> PHN-BHW Collaboration</h2>
+                    <p>The Public Health Nurse works closely with BHWs through:</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><strong>Training & capacity building:</strong> PHNs conduct orientation and refresher courses for BHWs.</li>
+                        <li><strong>Supervision & support:</strong> Regular BHW meetings, home visit accompaniment, review of records.</li>
+                        <li><strong>Referral coordination:</strong> BHWs refer patients to the RHU; PHNs ensure appropriate follow-up.</li>
+                        <li><strong>Community assemblies:</strong> PHNs and BHWs jointly organize health education sessions.</li>
+                        <li><strong>Data collection:</strong> BHWs assist in surveys, masterlisting, and reporting (FHSIS target client lists).</li>
+                    </ul>
+                    <p class="mt-3"><strong>Devolved setting:</strong> BHWs are under the supervision of the LGU but receive technical guidance from the PHN and RHU staff.</p>
+                    <button onclick="openQuiz('phn_bhw')" class="mt-8 w-full bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors flex items-center justify-center text-lg"><i class="fa-solid fa-list-check mr-3 text-2xl text-amber-400"></i> Take Quiz → Unlock Mnemonics & Final Exam</button>
+                </div>
+            </section>
+
+            <!-- MNEMONICS -->
+            <section id="mnemonics" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h2 class="text-3xl font-black text-slate-800 mb-6 border-b-2 border-amber-600 pb-3"><i class="fa-solid fa-brain text-amber-600 mr-4"></i> Mnemonic Appendix</h2>
+                    <div class="overflow-x-auto rounded-xl border">
+                        <table class="w-full text-sm md:text-base">
+                            <thead class="bg-amber-800 text-white"><tr><th class="p-3">Topic</th><th class="p-3">Mnemonic</th><th class="p-3">Meaning</th></tr></thead>
+                            <tbody class="divide-y">
+                                <tr><td class="p-3 font-semibold">BHW core roles</td><td class="font-black text-amber-700">E.T.C.H.</td><td class="reveal-text">Educate, Treat (first aid), Coordinate, Health monitor</td></tr>
+                                <tr class="bg-slate-50"><td class="p-3 font-semibold">RA 7883 benefits</td><td class="font-black text-amber-700">H.I.M.O.</td><td class="reveal-text">Honorarium, Insurance, Medical care, Opportunities (training/employment)</td></tr>
+                                <tr><td class="p-3 font-semibold">BHW training focus</td><td class="font-black text-amber-700">M.C.H.E.</td><td class="reveal-text">Maternal/child, Communicable disease, Hygiene, Emergency care</td></tr>
+                                <tr class="bg-slate-50"><td class="p-3 font-semibold">BHW support programs</td><td class="font-black text-amber-700">B.E.N.T.A.</td><td class="reveal-text">Botika ng Barangay, EPI, Nutrition, TB-DOTS, Animal bite/First aid</td></tr>
+                                <tr><td class="p-3 font-semibold">PHN-BHW collaboration</td><td class="font-black text-amber-700">S.T.A.R.</td><td class="reveal-text">Supervise, Train, Accompany, Refer/Record</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button onclick="openQuiz('final_quiz')" class="mt-8 w-full bg-amber-500 text-slate-900 font-black py-4 rounded-xl shadow-md hover:bg-amber-400 transition-colors text-lg"><i class="fa-solid fa-graduation-cap mr-3"></i> Take Final 50‑Item Exam</button>
+                </div>
+            </section>
+
+            <!-- FINAL QUIZ SECTION -->
+            <section id="final_quiz_sec" class="content-section hidden">
+                <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 text-center min-h-[60vh] flex flex-col justify-center items-center">
+                    <i class="fa-solid fa-graduation-cap text-8xl text-amber-400 mb-6"></i>
+                    <h2 class="text-4xl font-black text-slate-800 mb-4">BHW Comprehensive Exam</h2>
+                    <p class="text-lg text-slate-600 mb-8 max-w-2xl">50-item test covering definition, legal bases, training, roles, program involvement, PHC team, benefits, and PHN-BHW collaboration. 75% required to pass.</p>
+                    <button onclick="openQuiz('final_quiz')" class="w-full max-w-md bg-slate-800 text-white font-black py-4 rounded-xl shadow-md hover:bg-slate-900 transition-colors text-xl">Start Final Exam</button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+        <div class="bg-white w-full max-w-3xl rounded-2xl shadow-2xl p-6 md:p-8 relative max-h-[90vh] overflow-y-auto">
+            <button onclick="closeQuiz()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-2xl"></i></button>
+            <h2 id="quiz-title" class="text-3xl font-black text-slate-800 mb-2"></h2>
+            <p class="text-slate-600 mb-6 font-medium border-b pb-4">Score ≥75% to unlock next section.</p>
+            <div id="quiz-questions-container" class="space-y-4"></div>
+            <button id="quiz-submit-btn" onclick="submitQuiz()" class="mt-8 w-full bg-amber-700 text-white font-bold py-4 rounded-xl hover:bg-amber-800 transition-colors shadow-lg text-lg">Submit Answers</button>
+            <div id="quiz-result-container" class="hidden mt-6 p-4 rounded-xl bg-slate-100 border"></div>
+        </div>
+    </div>
+
+    <script>
+        let unlockedSections = ['home'];
+
+        // QUIZ DATA (8 sections + final)
+        const quizzes = {
+            definition: { title: "Definition & Legal Bases", next: "qualifications", questions: [
+                { q: "Barangay Health Workers are primarily:", options:["Volunteer community health workers","Licensed nurses","Physicians","Sanitary inspectors"], ans:0 },
+                { q: "Which law specifically provides benefits and incentives to BHWs?", options:["RA 7883","RA 9173","RA 7160","RA 7305"], ans:0 },
+                { q: "BHWs are classified under which level of health workers?", options:["Village/Barangay level","Provincial level","Regional level","Tertiary level"], ans:0 },
+                { q: "The Philippine adoption of Primary Health Care was through:", options:["LOI 949","EO 102","RA 7160","PD 856"], ans:0 },
+                { q: "Which of the following can be a BHW?", options:["Traditional birth attendant","Healer","Community volunteer","All of the above"], ans:3 }
+            ] },
+            qualifications: { title: "Qualifications & Training", next: "roles", questions: [
+                { q: "Basic educational requirement for BHW is:", options:["College graduate","At least elementary level","High school graduate","Nursing degree"], ans:1 },
+                { q: "Who typically trains BHWs?", options:["DOH, LGU, or NGOs","Private corporations","Foreign agencies","Police"], ans:0 },
+                { q: "BHW training includes all EXCEPT:", options:["Major surgery","First aid","Immunization support","Disease surveillance"], ans:0 },
+                { q: "After training, BHWs are accredited by:", options:["LGU","DOH regional office","PRC","DepEd"], ans:0 },
+                { q: "BHWs should be selected by:", options:["Community","Mayor alone","PHN","Midwife"], ans:0 }
+            ] },
+            roles: { title: "Roles & Responsibilities", next: "programs", questions: [
+                { q: "Which is a primary role of BHW?", options:["Health education","Prescribing antibiotics","Performing surgery","Hospital administration"], ans:0 },
+                { q: "BHWs can assist in immunization by:", options:["Mobilizing children","Giving vaccines independently","Storing vaccines at home","Prescribing drugs"], ans:0 },
+                { q: "In TB-DOTS, BHWs can serve as:", options:["Treatment partners","Physicians","X-ray technicians","Pharmacists"], ans:0 },
+                { q: "Which of the following is NOT a BHW responsibility?", options:["Conducting mother's classes","Distributing ORS","Performing cesarean section","Assisting in family planning"], ans:2 },
+                { q: "BHWs help in nutrition by:", options:["Identifying malnourished children","Performing surgery","Prescribing high-calorie diet","Administering IV fluids"], ans:0 }
+            ] },
+            programs: { title: "BHW in Specific Programs", next: "team", questions: [
+                { q: "In EPI, BHWs support the strategy called:", options:["Reaching Every Barangay","Sentrong Sigla","Botika ng Barangay","Operation Timbang"], ans:0 },
+                { q: "BHWs can distribute which family planning method?", options:["Pills and condoms","IUD","BTL","Vasectomy"], ans:0 },
+                { q: "For diarrhea control, BHWs teach:", options:["ORS preparation","Intravenous therapy","Antibiotic use","Surgery"], ans:0 },
+                { q: "BHWs can assist in malaria control by:", options:["Distributing insecticide-treated nets","Prescribing chloroquine","Reading blood smears","Hospitalizing patients"], ans:0 },
+                { q: "Which program uses BHWs as treatment partners?", options:["TB-DOTS","EPI","Family planning","Nutrition"], ans:0 }
+            ] },
+            team: { title: "BHW as Part of PHC Team", next: "benefits", questions: [
+                { q: "The basic PHC team includes all EXCEPT:", options:["BHW","Neurosurgeon","Midwife","Sanitary inspector"], ans:1 },
+                { q: "BHWs are directly supervised by:", options:["PHN or Rural Health Midwife","Mayor","Congressman","Police"], ans:0 },
+                { q: "In the team, BHW acts as:", options:["Link between community and formal health system","Leader of the team","Physician","Pharmacist"], ans:0 },
+                { q: "BHWs participate in planning by:", options:["Attending RHU team meetings","Writing prescriptions","Performing laboratory tests","Conducting surgery"], ans:0 },
+                { q: "The community component of IMCI involves BHWs in:", options:["Assessment and referral of sick children","Hospitalization","Intensive care","Vaccine research"], ans:0 }
+            ] },
+            benefits: { title: "Benefits & Incentives (RA 7883)", next: "phn_bhw", questions: [
+                { q: "Under RA 7883, BHWs receive:", options:["Monthly honorarium","Full salary","Retirement pay","13th month pay"], ans:0 },
+                { q: "BHWs are entitled to free medical services in:", options:["Government facilities","Private hospitals only","Specialty clinics only","International hospitals"], ans:0 },
+                { q: "RA 7883 provides BHWs with:", options:["Insurance coverage for duty-related injury","Board exam eligibility","Driver's license","Passport"], ans:0 },
+                { q: "Which level of government is responsible for BHW accreditation?", options:["LGU","National government","Philippine Congress","Supreme Court"], ans:0 },
+                { q: "BHWs may receive recognition through:", options:["Awards for outstanding performance","Promotion to physician","Foreign scholarship only","Retirement pension"], ans:0 }
+            ] },
+            phn_bhw: { title: "PHN-BHW Collaboration", next: "mnemonics", questions: [
+                { q: "PHN supports BHWs by:", options:["Conducting training","Supervising activities","Accompanying home visits","All of the above"], ans:3 },
+                { q: "BHWs refer patients to the RHU; PHNs ensure:", options:["Appropriate follow-up","Hospitalization only","Financial payment","Legal action"], ans:0 },
+                { q: "Data collection by BHWs includes:", options:["Masterlisting for EPI","Surgical procedures","Prescription writing","X-ray interpretation"], ans:0 },
+                { q: "In the devolved setting, BHWs are under the administrative supervision of:", options:["LGU","DOH central office","DepEd","PNP"], ans:0 },
+                { q: "PHNs and BHWs jointly organize:", options:["Community health assemblies","Court hearings","Political rallies","Religious services"], ans:0 }
+            ] }
+        };
+
+        // Build final quiz (50 items) from all sections
+        let finalQs = [];
+        for (let sec of ['definition','qualifications','roles','programs','team','benefits','phn_bhw']) {
+            finalQs = finalQs.concat(quizzes[sec].questions.slice(0,7));
+        }
+        while(finalQs.length < 50) finalQs.push({ q: "Barangay Health Workers are essential for:", options:["Community-based primary health care","Tertiary hospital care","Specialty surgery","Medical research only"], ans:0 });
+        quizzes['final_quiz'] = { title: "Final 50‑Item Exam (Barangay Health Worker)", next: null, questions: finalQs.slice(0,50) };
+
+        function unlockFirstSection() { if(!unlockedSections.includes('definition')) { unlockedSections.push('definition'); updateSidebarUI(); } showSection('definition'); }
+        function showSection(sectionId) {
+            if (!unlockedSections.includes(sectionId) && sectionId !== 'home') { alert("Please pass the Active Recall Quiz in the previous section to unlock."); return; }
+            document.querySelectorAll('.content-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(sectionId)?.classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(btn => { btn.classList.remove('bg-amber-100','text-amber-900','border-r-4','border-amber-800'); btn.classList.add('text-slate-600'); });
+            let active = document.getElementById('btn-'+sectionId);
+            if(active) { active.classList.remove('text-slate-600'); active.classList.add('bg-amber-100','text-amber-900','border-r-4','border-amber-800'); }
+            if(window.innerWidth < 768) document.getElementById('sidebar').classList.add('hidden');
+            document.querySelector('main').scrollTop = 0;
+        }
+        function updateSidebarUI() {
+            const sections = ['home','definition','qualifications','roles','programs','team','benefits','phn_bhw','mnemonics','final_quiz_sec'];
+            sections.forEach(sec => {
+                let btn = document.getElementById('btn-'+sec);
+                if(!btn) return;
+                let lockIcon = btn.querySelector('.fa-lock'), mainIcon = btn.querySelector('.nav-icon');
+                if(unlockedSections.includes(sec) || sec==='home') { btn.classList.remove('locked-section'); if(lockIcon) lockIcon.classList.add('hidden'); if(mainIcon) mainIcon.classList.remove('hidden'); }
+                else { btn.classList.add('locked-section'); if(lockIcon) lockIcon.classList.remove('hidden'); if(mainIcon) mainIcon.classList.add('hidden'); }
+            });
+        }
+        let currentQuiz = null;
+        function openQuiz(sectionId) {
+            currentQuiz = sectionId;
+            let qd = quizzes[sectionId];
+            if(!qd) return;
+            document.getElementById('quiz-title').innerText = qd.title;
+            let container = document.getElementById('quiz-questions-container');
+            container.innerHTML = '';
+            qd.questions.forEach((q, idx) => {
+                let html = `<div class="bg-slate-50 p-4 rounded-xl border mb-4" id="quiz-q-${idx}"><p class="font-bold mb-3">${idx+1}. ${q.q}</p><div class="space-y-2" data-qidx="${idx}">`;
+                q.options.forEach((opt, oi) => {
+                    html += `<label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white cursor-pointer"><input type="radio" name="q${idx}" value="${oi}" class="form-radio text-amber-600"><span>${opt}</span></label>`;
+                });
+                html += `</div><div class="feedback-${idx} text-sm mt-2 hidden"></div></div>`;
+                container.innerHTML += html;
+            });
+            document.getElementById('quiz-submit-btn').classList.remove('hidden');
+            document.getElementById('quiz-result-container').classList.add('hidden');
+            document.getElementById('quiz-modal').classList.remove('hidden');
+        }
+        function closeQuiz() { document.getElementById('quiz-modal').classList.add('hidden'); }
+        function submitQuiz() {
+            let qd = quizzes[currentQuiz];
+            if(!qd) return;
+            let score = 0;
+            for(let i=0;i<qd.questions.length;i++) {
+                let selected = document.querySelector(`input[name="q${i}"]:checked`);
+                let isCorrect = (selected && parseInt(selected.value) === qd.questions[i].ans);
+                if(isCorrect) score++;
+                let fbDiv = document.querySelector(`.feedback-${i}`);
+                if(fbDiv) {
+                    fbDiv.classList.remove('hidden');
+                    let correctAns = qd.questions[i].options[qd.questions[i].ans];
+                    if(isCorrect) { fbDiv.innerHTML = `<span class="text-green-700"><i class="fa-solid fa-check-circle"></i> Correct</span>`; fbDiv.parentElement?.classList.add('quiz-feedback-correct'); fbDiv.parentElement?.classList.remove('quiz-feedback-wrong'); }
+                    else { let selectedText = selected ? qd.questions[i].options[parseInt(selected.value)] : "None"; fbDiv.innerHTML = `<span class="text-red-700"><i class="fa-solid fa-times-circle"></i> Incorrect. Correct: ${correctAns}. Your answer: ${selectedText}</span>`; fbDiv.parentElement?.classList.add('quiz-feedback-wrong'); fbDiv.parentElement?.classList.remove('quiz-feedback-correct'); }
+                }
+            }
+            let percent = (score/qd.questions.length)*100;
+            let resultDiv = document.getElementById('quiz-result-container');
+            let btn = document.getElementById('quiz-submit-btn');
+            btn.classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            if(percent >= 75) {
+                if(currentQuiz === 'final_quiz') { resultDiv.innerHTML = `<div class="text-amber-500 text-6xl text-center mb-4">🏆</div><h3 class="text-2xl font-black text-center">Mastery Achieved!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><p class="mt-2 text-center text-green-700">You have mastered the role of Barangay Health Workers.</p><button onclick="closeQuiz()" class="mt-4 w-full bg-amber-700 text-white py-2 rounded-lg">Close</button>`; return; }
+                if(qd.next && !unlockedSections.includes(qd.next)) { unlockedSections.push(qd.next); if(qd.next === 'mnemonics') { unlockedSections.push('final_quiz_sec'); } updateSidebarUI(); }
+                resultDiv.innerHTML = `<div class="text-green-600 text-5xl text-center mb-4">✓</div><h3 class="text-2xl font-black text-center">Section Unlocked!</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><button onclick="closeQuiz(); showSection('${qd.next}')" class="mt-4 w-full bg-amber-700 text-white py-2 rounded-lg">Continue to Next Section</button>`;
+            } else {
+                resultDiv.innerHTML = `<div class="text-red-500 text-5xl text-center mb-4">✗</div><h3 class="text-2xl font-black text-center">Failed (need 75%)</h3><p class="text-center">Score ${score}/${qd.questions.length} (${percent}%)</p><button onclick="openQuiz('${currentQuiz}')" class="mt-4 w-full bg-slate-600 text-white py-2 rounded-lg">Retry Quiz</button>`;
+            }
+        }
+        function toggleRecallMode() {
+            let active = !document.body.classList.contains('recall-mode');
+            let toggle = document.getElementById('recall-toggle'), knob = document.getElementById('recall-knob');
+            if(active) { document.body.classList.add('recall-mode'); toggle.classList.add('bg-amber-700'); knob.classList.add('translate-x-6'); }
+            else { document.body.classList.remove('recall-mode'); toggle.classList.remove('bg-amber-700'); knob.classList.remove('translate-x-6'); }
+        }
+        function toggleMobileMenu() { let s=document.getElementById('sidebar'); if(s.classList.contains('hidden')) s.classList.remove('hidden'); else s.classList.add('hidden'); }
+        document.addEventListener('DOMContentLoaded', () => { updateSidebarUI(); document.querySelectorAll('.reveal-text').forEach(el => el.addEventListener('click', function(){ if(document.body.classList.contains('recall-mode')) this.classList.toggle('revealed'); })); });
+    </script>
+</body>
+</html>
